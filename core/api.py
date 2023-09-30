@@ -29,7 +29,7 @@ class API:
 
     def start_vm(self, data : str):
         if self.__is_valid_uuid(data):
-            cmd = f'VBoxManage startvm {data}'
+            cmd = f'VBoxHeadless --startvm {data}'
             returned_output = subprocess.check_output(cmd)
             return returned_output
         return f'Error - Invalid Input: {data[:100]}'
@@ -37,10 +37,22 @@ class API:
     def list_vms(self):
         #return list of vms
         return
-
-    def create_vm(self, data : str):
-        #accept post, create vm by specification
-        return
+    
+    def create_vm(self,data : dict):
+        cmd = [
+            f'''VBoxManage --name "{data['name']}" --ostype {data['ostype']} --register''',
+            f'''VBoxManage createhd --filename "{data['name']}.vdi" --size {data.get('size',10000)}''',
+            f'''VBoxManage storagectl "{data['name']}" --name "IDE Controller" --add ide --controller PIIX4''',
+            f'''VBoxManage storageattach "{data['name']}" --storagectl "IDE Controller" --port 0 --device -0 --type hdd --medium "{data['name']}.vdi"''',
+            f'''VBoxManage storageattach "{data['name']}" --storagectl "IDE Controller" --port 0 --device 1 --type dvddrive --medium {self.img_folder+'/standard_'+{data['ostype']}+'.iso'}''',
+            f'''VBoxManage modifyvm "{data['name']}" --vrde on'''
+        ]
+        return f'TODO - Not yet implemented'
+    
+    def list_os_types(self):
+        cmd = f'VBoxManage list ostypes'
+        returned_output = subprocess.check_output(cmd)
+        return returned_output
     
     def stop_vm(self, data : str):
         #accept get request to shutdown vm
