@@ -9,6 +9,6 @@ Design
 
 
 This only creates,starts,stops VMs. 
-Custom Images will be configured and tasked for:
+Custom Images will be configured and tasked (by a seperate process) for:
   * Simulation
   * Signals Testing
